@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from itertools import groupby, chain
 from operator import itemgetter
+from urllib.parse import urlparse
 
 from dateutil.parser import parse as parse_date
 from dmcontent.errors import ContentNotFoundError
@@ -345,6 +346,14 @@ def view_supplier_declaration(supplier_id, framework_slug):
             key=lambda question: question.number
         )
     )
+    modern_slavery_fields = ['modernSlaveryStatement', 'modernSlaveryStatementOptional']
+    declaration_with_public_assets = sf.get("declaration", {})
+    for field in modern_slavery_fields:
+        if declaration_with_public_assets.get(field):
+            domain = urlparse(declaration_with_public_assets[field]).netloc
+            assets_domain = urlparse(current_app.config['DM_ASSETS_URL']).netloc
+            public_url = declaration_with_public_assets[field].replace(domain + '/suppliers/assets', assets_domain)
+            declaration_with_public_assets[field] = public_url
     # Enhance question_content with any nested questions
     for question in chain.from_iterable(section.questions for section in declaration_sections):
         if question.type == 'multiquestion':
@@ -356,7 +365,7 @@ def view_supplier_declaration(supplier_id, framework_slug):
         supplier=supplier,
         framework=framework,
         supplier_framework=sf,
-        declaration=sf.get("declaration", {}),
+        declaration=declaration_with_public_assets,
         content=content,
         question_content=question_content
     )
