@@ -138,6 +138,8 @@ urllib3==1.25.10
     # via
     #   botocore
     #   requests
+uwsgi==2.0.19.1
+    # via -r requirements.in
 werkzeug==1.0.0
     # via flask
 workdays==1.4
