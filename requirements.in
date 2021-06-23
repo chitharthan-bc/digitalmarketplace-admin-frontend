@@ -7,7 +7,6 @@ Flask-WTF==0.15.1
 lxml==4.6.3
 itsdangerous
 uwsgi
-awscli-cwlogs
 
 digitalmarketplace-apiclient
 digitalmarketplace-content-loader
